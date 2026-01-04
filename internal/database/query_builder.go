@@ -277,7 +277,7 @@ func (qb *queryBuilder) IncludeFrom(opt orm.WithOption) orm.QueryBuilder {
 	return qb
 }
 
-func NewQueryBuilder(db db, table string) orm.QueryBuilder {
+func newQueryBuilder(db db, table string) *queryBuilder {
 	tableDef := getTable(&db, table)
 
 	return &queryBuilder{

@@ -15,27 +15,73 @@ func (db *db) QueryRaw(query string, args ...any) (*sql.Rows, error) {
 }
 
 func (db *db) FindMany(table string, filters ...any) orm.QueryBuilder {
-	return nil
+	qb := newQueryBuilder(*db, table)
+	whereClause, args := buildWhereClause(filters, nil)
+	qb.whereClause = whereClause
+	qb.args = args
+
+	if qb.tableDef != nil && qb.tableDef.softDeleteCol != "" {
+		qb.includeDeleted = false
+		qb.onlyDeleted = false
+	}
+
+	return qb
 }
 
 func (db *db) FindOne(table string, filters ...any) orm.QueryBuilder {
-	return nil
+	qb := newQueryBuilder(*db, table)
+	whereClause, args := buildWhereClause(filters, nil)
+	qb.whereClause = whereClause
+	qb.args = args
+	qb.limit = 1
+
+	if qb.tableDef != nil && qb.tableDef.softDeleteCol != "" {
+		qb.includeDeleted = false
+		qb.onlyDeleted = false
+	}
+
+	return qb
 }
 
 func (db *db) Create(table string, data interface{}) error {
-	return nil
+	v := reflect.ValueOf(data)
+
+	switch v.Kind() {
+	case reflect.Slice:
+		return db.insertBatch(table, v)
+
+	case reflect.Struct:
+		return db.insertRow(table, data)
+
+	default:
+		return fmt.Errorf("invalid data type: expected struct or slice, got %s", v.Kind())
+	}
 }
 
 func (db *db) Update(table string, filters ...any) orm.UpdateBuilder {
-	return nil
+	return &updateBuilder{
+		db:       *db,
+		table:    table,
+		tableDef: getTable(db, table),
+		filters:  filters,
+		sets:     make(map[string]any),
+	}
 }
 
 func (db *db) Delete(table string, filters ...any) orm.DeleteBuilder {
-	return nil
+	return &deleteBuilder{
+		db:      *db,
+		table:   table,
+		filters: filters,
+	}
 }
 
-func (db *db) DeleteBatch(table string, filters ...any) orm.DeleteBuilder {
-	return nil
+func (db *db) DeleteBatch(table string, filters ...any) orm.DeleteBatchBuilder {
+	return &deleteBatchBuilder{
+		db:      *db,
+		table:   table,
+		filters: filters,
+	}
 }
 
 func buildCondition(f filter, argIndex *int) (string, []interface{}) {

@@ -13,7 +13,7 @@ type DB interface {
 	Create(table string, data interface{}) error
 	Update(table string, filters ...any) UpdateBuilder
 	Delete(table string, filters ...any) DeleteBuilder
-	DeleteBatch(table string, filters ...any) DeleteBuilder
+	DeleteBatch(table string, filters ...any) DeleteBatchBuilder
 	NewTable(name string, fn func(TableBuilder)) Table
 	SyncSchemas() error
 	Close()
