@@ -2,7 +2,7 @@ package database
 
 import "github.com/henrique998/keystone/orm"
 
-func (db *db) NewTable(name string, fn func(orm.TableBuilder)) orm.TableDefinition {
+func (db *db) NewTable(name string, fn func(orm.TableBuilder)) orm.Table {
 	tb := tableBuilder{
 		tableName: name,
 		columns:   make(map[string]*columnInfo),

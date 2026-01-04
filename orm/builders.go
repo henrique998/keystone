@@ -16,7 +16,6 @@ type QueryBuilder interface {
 type UpdateBuilder interface {
 	Set(column string, value interface{}) UpdateBuilder
 	SetMap(values map[string]interface{}) UpdateBuilder
-	buildSQL() (string, []interface{})
 	Exec() error
 }
 
@@ -25,7 +24,12 @@ type DeleteBuilder interface {
 	ExecReturningCount() (int64, error)
 	AllowUnsafe() DeleteBuilder
 	Force() DeleteBuilder
-	buildSQL() (string, []any, error)
+}
+
+type DeleteBatchBuilder interface {
+	AllowUnsafe() DeleteBatchBuilder
+	HardDelete() DeleteBatchBuilder
+	Exec() error
 }
 
 type ColumnBuilder interface {

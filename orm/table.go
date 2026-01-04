@@ -1,5 +1,5 @@
 package orm
 
-type TableDefinition interface {
+type Table interface {
 	UseSoftDelete(column string)
 }

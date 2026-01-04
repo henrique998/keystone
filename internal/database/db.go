@@ -9,7 +9,7 @@ import (
 
 type db struct {
 	conn   *sql.DB
-	tables map[string]orm.TableDefinition // TODO: replace with map[string]*tableDefinition
+	tables map[string]*tableDefinition
 }
 
 func New(args orm.Args) orm.DB {
@@ -29,6 +29,10 @@ func New(args orm.Args) orm.DB {
 
 	return &db{
 		conn:   conn,
-		tables: make(map[string]orm.TableDefinition),
+		tables: make(map[string]*tableDefinition),
 	}
+}
+
+func (d *db) Close() {
+	d.conn.Close()
 }

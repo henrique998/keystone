@@ -14,8 +14,9 @@ type DB interface {
 	Update(table string, filters ...any) UpdateBuilder
 	Delete(table string, filters ...any) DeleteBuilder
 	DeleteBatch(table string, filters ...any) DeleteBuilder
-	NewTable(name string, fn func(TableBuilder)) TableDefinition
+	NewTable(name string, fn func(TableBuilder)) Table
 	SyncSchemas() error
+	Close()
 }
 
 type Credentials struct {
